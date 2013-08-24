@@ -53,7 +53,7 @@ implementation drupalSite:
     drupal_settings_dir = std::Directory(host = host, path = "/etc/drupal7/{{ vhost.name.name }}",
         owner = "root", group = "root", mode = 755, requires = pkg)
     drupal_files_dir = std::Directory(host = host, path = "/var/lib/drupal7/files/{{ vhost.name.name }}",
-        owner = "root", group = "root", mode = 755, requires = pkg)
+        owner = "root", group = "apache", mode = 775, requires = pkg)
     drupal_file_link = std::Symlink(host = host, source = "/var/lib/drupal7/files/{{ vhost.name.name }}",
         target = "/etc/drupal7/{{ vhost.name.name }}/files")
 end
