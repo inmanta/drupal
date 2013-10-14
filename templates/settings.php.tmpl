@@ -8,10 +8,15 @@ $databases = array (
       'database' => '{{ database.name }}',
       'username' => '{{ database.user }}',
       'password' => '{{ database.password }}',
+{% if database.server.host.ip is defined %}
+      'host' => '{{ database.server.host.ip }}',
+{% else %}
       'host' => '{{ database.server.host.name }}',
+{% endif %}
       'port' => '',
       'driver' => 'mysql',
       'prefix' => '',
     ),
   ),
 );
+
