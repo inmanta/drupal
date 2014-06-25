@@ -47,7 +47,7 @@ implementation drupalSite:
     httpd::Alias(vhost = vhost, web = "/", dir = "/usr/share/drupal7/")
 
     drupal_cfg = std::ConfigFile(host = host, path = "/etc/drupal7/{{ vhost.name.name }}/settings.php",
-        content = template("drupal/settings.php.tmpl"), provides = vhost.webserver,
+        content = std::template("drupal/settings.php.tmpl"), provides = vhost.webserver,
         requires = drupal_settings_dir)
     
     drupal_settings_dir = std::Directory(host = host, path = "/etc/drupal7/{{ vhost.name.name }}",
