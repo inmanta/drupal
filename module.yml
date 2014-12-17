@@ -1,5 +1,5 @@
 name: drupal
-version: 0.2b1
+version: 0.2
 source: git@github.com:bartv/imp-drupal
 license: Apache 2.0
 author: Bart Vanbrabant <bart.vanbrabant@cs.kuleuven.be>
