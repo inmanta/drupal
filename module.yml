@@ -1,10 +1,8 @@
-name: drupal
-version: 0.2
-source: git@github.com:bartv/imp-drupal
+author: Bart Vanbrabant <bart@impera.io>
 license: Apache 2.0
-author: Bart Vanbrabant <bart.vanbrabant@cs.kuleuven.be>
-requires:
-    std: git@github.com:bartv/imp-std, ">= 0.1"
-    httpd: git@github.com:bartv/imp-httpd, ">= 0.1"
-    mysql: git@github.com:bartv/imp-mysql, ">= 0.1"
-    php: git@github.com:bartv/imp-php, ">= 0.1"
+name: drupal
+requires: {httpd: 'git@github.com:bartv/imp-httpd, ">= 0.1"', mysql: 'git@github.com:bartv/imp-mysql,
+    ">= 0.1"', php: 'git@github.com:bartv/imp-php, ">= 0.1"', std: 'git@github.com:bartv/imp-std,
+    ">= 0.1"'}
+source: git@github.com:bartv/imp-drupal
+version: 0.2.1
