@@ -65,7 +65,7 @@ implementation drupalSiteDEB:
 
     drupal_cfg = std::ConfigFile(host = host, path = "/etc/drupal/7/sites/{{ vhost.name.name }}/settings.php",
         content = std::template("drupal/settings.php.tmpl"), provides = vhost.webserver,
-        requires = drupal_settings_dir)
+        requires = [drupal_settings_dir, pkg])
     
     drupal_settings_dir = std::Directory(host = host, path = "/etc/drupal/7/sites/{{ vhost.name.name }}",
         owner = "root", group = "root", mode = 755, requires = pkg)
