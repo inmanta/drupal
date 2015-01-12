@@ -16,14 +16,6 @@
     Contact: bart@impera.io
 """
 
-entity Common:
-    """
-        Add drupal support to a server
-    """
-end
-
-std::Host host [1] -- [0:1] Common drupal_common
-
 entity Site:
     """
         Installs a drupal site in a virtual host.
@@ -33,15 +25,9 @@ end
 Site drupal_site [0:1] -- [1] httpd::Vhost vhost
 Site drupal_site [0:1] -- [1] mysql::Database database
 
-implementation common:
-    std::Package(host = host, name = "drupal7", state = "installed")
-end
-
-implement Common using common
-
 implementation drupalSiteRPM:
     host = vhost.webserver.host
-    pkg = std::Package[host = host, name = "drupal7"]
+    pkg = std::Package(host = host, name = "drupal7", state = "installed")
 
     httpd::Alias(vhost = vhost, web = "/", dir = "/usr/share/drupal7/")
 
