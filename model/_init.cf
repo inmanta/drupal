@@ -16,52 +16,53 @@
     Contact: bart@impera.io
 """
 
-entity Site:
+Application drupal_app [0:] -- [1] mysql::Database database
+
+entity Application extends web::Application:
     """
-        Installs a drupal site in a virtual host.
+        A single drupal application
     """
+    string admin_user
+    string admin_password
+    string admin_email
+    string site_name
 end
 
-Site drupal_site [0:1] -- [1] httpd::Vhost vhost
-Site drupal_site [0:1] -- [1] mysql::Database database
-
-implementation drupalSiteRPM:
-    host = vhost.webserver.host
+implementation drupalSiteRPM for Application:
+    host = container.host
     pkg = std::Package(host=host, name="drupal7", state="installed")
 
-    httpd::Alias(vhost=vhost, web="/", dir="/usr/share/drupal7/")
-
-    drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal7/{{ vhost.name.name }}/settings.php",
-        content=std::template("drupal/settings.php.tmpl"), provides=vhost.webserver,
+    drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal7/{{ name.hostname }}/settings.php",
+        content=std::template("drupal/settings.php.tmpl"), provides=container,
         requires=drupal_settings_dir)
 
-    drupal_settings_dir = std::Directory(host=host, path="/etc/drupal7/{{ vhost.name.name }}",
+    drupal_settings_dir = std::Directory(host=host, path="/etc/drupal7/{{ name.hostname }}",
         owner="root", group="root", mode=755, requires=pkg)
-    drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ vhost.name.name }}",
+    drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ name.hostname }}",
         owner="root", group="apache", mode=775, requires=pkg)
-    drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ vhost.name.name }}",
-        target="/etc/drupal7/{{ vhost.name.name }}/files", requires=drupal_files_dir)
+    drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ name.hostname }}",
+        target="/etc/drupal7/{{ name.hostname }}/files", requires=drupal_files_dir)
+
+    self.document_root = "/usr/share/drupal7"
 end
 
-implementation drupalSiteDEB:
-    host = vhost.webserver.host
+implementation drupalSiteDEB for Application:
+    host = container.host
     pkg = std::Package(host=host, name="drupal7", state="installed")
 
-    httpd::Alias(vhost=vhost, web="/", dir="/usr/share/drupal7/")
-
-    drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal/7/sites/{{ vhost.name.name }}/settings.php",
-        content=std::template("drupal/settings.php.tmpl"), provides=vhost.webserver,
+    drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal/7/sites/{{ name.hostname }}/settings.php",
+        content=std::template("drupal/settings.php.tmpl"), provides=container,
         requires=[drupal_settings_dir, pkg])
 
-    drupal_settings_dir = std::Directory(host=host, path="/etc/drupal/7/sites/{{ vhost.name.name }}",
+    drupal_settings_dir = std::Directory(host=host, path="/etc/drupal/7/sites/{{ name.hostname }}",
         owner="root", group="root", mode=755, requires=pkg)
-    drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ vhost.name.name }}",
+    drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ name.hostname }}",
         owner="root", group="www-data", mode=775, requires=pkg)
-    drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ vhost.name.name }}",
-        target="/etc/drupal/7/sites/{{ vhost.name.name }}/files", requires=drupal_files_dir)
+    drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ name.hostname }}",
+        target="/etc/drupal/7/sites/{{ name.hostname }}/files", requires=drupal_files_dir)
 end
 
-implement Site using drupalSiteRPM when std::familyof(vhost.webserver.host.os, "rhel") or std::familyof(vhost.webserver.host.os, "fedora")
-implement Site using drupalSiteDEB when std::familyof(vhost.webserver.host.os, "ubuntu")
+implement Application using drupalSiteRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
+implement Application using drupalSiteDEB when std::familyof(container.host.os, "ubuntu")
 
 
