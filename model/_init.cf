@@ -44,6 +44,11 @@ implementation drupalSiteRPM for Application:
         target="/etc/drupal7/{{ name.hostname }}/files", requires=drupal_files_dir)
 
     self.document_root = "/usr/share/drupal7"
+
+    std::Package(host=host, name="php-drush-drush", state="installed")
+    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }}",
+              cwd="/usr/share/drupal7/sites/{{ name.hostname }}",
+              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null")
 end
 
 implementation drupalSiteDEB for Application:

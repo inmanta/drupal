@@ -2,10 +2,10 @@ author: Bart Vanbrabant <bart@impera.io>
 license: Apache 2.0
 name: drupal
 source: git@github.com:impera-io/drupal
-version: 0.2.5
-requires: 
+version: 0.3
+requires:
     web: git@github.com:impera-io/web, ">= 0.1b1"
     mysql: git@github.com:impera-io/mysql, ">= 0.1"
     php: git@github.com:impera-io/php, ">= 0.1"
     std: git@github.com:impera-io/std, ">= 0.1"
-
+    exec: git@github.com:impera-io/exec, ">= 0.2.6"
