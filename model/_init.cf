@@ -62,7 +62,7 @@ implementation drupalSiteDEB for Application:
         target="/etc/drupal/7/sites/{{ name.hostname }}/files", requires=drupal_files_dir)
 end
 
-implement Application using drupalSiteRPM, php::phpApacheRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
-implement Application using drupalSiteDEB, php::phpApacheDEB when std::familyof(container.host.os, "ubuntu")
+implement Application using drupalSiteRPM, php::phpApacheRPM, apache::appImplRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
+implement Application using drupalSiteDEB, php::phpApacheDEB, apache::appImplDEB when std::familyof(container.host.os, "ubuntu")
 
 
