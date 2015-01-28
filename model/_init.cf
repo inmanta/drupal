@@ -65,6 +65,13 @@ implementation drupalSiteDEB for Application:
         owner="root", group="www-data", mode=775, requires=pkg)
     drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ name.hostname }}",
         target="/etc/drupal/7/sites/{{ name.hostname }}/files", requires=drupal_files_dir)
+
+    self.document_root = "/usr/share/drupal7"
+
+    std::Package(host=host, name="drush", state="installed")
+    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }} --sites-subdir={{ name.hostname }}",
+              cwd="/usr/share/drupal7/",
+              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null")
 end
 
 implement Application using drupalSiteRPM, php::phpApacheRPM, apache::appImplRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
