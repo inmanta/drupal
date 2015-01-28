@@ -18,7 +18,7 @@
 
 Application drupal_app [0:] -- [1] mysql::Database database
 
-entity Application extends web::Application:
+entity Application extends php::Application:
     """
         A single drupal application
     """
@@ -62,7 +62,7 @@ implementation drupalSiteDEB for Application:
         target="/etc/drupal/7/sites/{{ name.hostname }}/files", requires=drupal_files_dir)
 end
 
-implement Application using drupalSiteRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
-implement Application using drupalSiteDEB when std::familyof(container.host.os, "ubuntu")
+implement Application using drupalSiteRPM, php::phpApacheRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
+implement Application using drupalSiteDEB, php::phpApacheDEB when std::familyof(container.host.os, "ubuntu")
 
 
