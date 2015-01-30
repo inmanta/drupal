@@ -51,7 +51,7 @@ implementation drupalSiteRPM for Application:
     exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}",
               cwd="/usr/share/drupal7/",
               unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
-              requires=[p_drush, p_mysql])
+              requires=[p_drush, p_mysql, drupal_cfg])
 end
 
 implementation drupalSiteDEB for Application:
@@ -76,7 +76,7 @@ implementation drupalSiteDEB for Application:
     exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }} --sites-subdir={{ name.hostname }}",
               cwd="/usr/share/drupal7/",
               unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
-              requires=[p_drush, p_mysql])
+              requires=[p_drush, p_mysql, drupal_cfg])
 end
 
 implement Application using drupalSiteRPM, php::phpApacheRPM, apache::appImplRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
