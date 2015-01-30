@@ -39,16 +39,19 @@ implementation drupalSiteRPM for Application:
     drupal_settings_dir = std::Directory(host=host, path="/etc/drupal7/{{ name.hostname }}",
         owner="root", group="root", mode=755, requires=pkg)
     drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ name.hostname }}",
-        owner="root", group="apache", mode=775, requires=pkg)
+        owner="root", group=container.group, mode=775, requires=pkg)
     drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ name.hostname }}",
         target="/etc/drupal7/{{ name.hostname }}/files", requires=drupal_files_dir)
 
     self.document_root = "/usr/share/drupal7"
 
-    std::Package(host=host, name="php-drush-drush", state="installed")
-    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }} --sites-subdir={{ name.hostname }}",
+    p_drush = std::Package(host=host, name="php-drush-drush", state="installed", requires=p_which)
+    p_which = std::Package(host=host, name="which", state="installed")
+    p_mysql = std::Package(host=host, name="mariadb", state="installed")
+    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}",
               cwd="/usr/share/drupal7/",
-              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null")
+              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
+              requires=[p_drush, p_mysql])
 end
 
 implementation drupalSiteDEB for Application:
@@ -62,16 +65,18 @@ implementation drupalSiteDEB for Application:
     drupal_settings_dir = std::Directory(host=host, path="/etc/drupal/7/sites/{{ name.hostname }}",
         owner="root", group="root", mode=755, requires=pkg)
     drupal_files_dir = std::Directory(host=host, path="/var/lib/drupal7/files/{{ name.hostname }}",
-        owner="root", group="www-data", mode=775, requires=pkg)
+        owner="root", group=container.group, mode=775, requires=pkg)
     drupal_file_link = std::Symlink(host=host, source="/var/lib/drupal7/files/{{ name.hostname }}",
         target="/etc/drupal/7/sites/{{ name.hostname }}/files", requires=drupal_files_dir)
 
     self.document_root = "/usr/share/drupal7"
 
-    std::Package(host=host, name="drush", state="installed")
+    p_drush = std::Package(host=host, name="drush", state="installed")
+    p_mysql = std::Package(host=host, name="mysql-client", state="installed")
     exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }} --sites-subdir={{ name.hostname }}",
               cwd="/usr/share/drupal7/",
-              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null")
+              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
+              requires=[p_drush, p_mysql])
 end
 
 implement Application using drupalSiteRPM, php::phpApacheRPM, apache::appImplRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
