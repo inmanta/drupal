@@ -48,10 +48,10 @@ implementation drupalSiteRPM for Application:
     p_drush = std::Package(host=host, name="php-drush-drush", state="installed", requires=p_which)
     p_which = std::Package(host=host, name="which", state="installed")
     p_mysql = std::Package(host=host, name="mariadb", state="installed")
-    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}",
-              cwd="/usr/share/drupal7/",
-              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
-              requires=[p_drush, p_mysql, drupal_cfg])
+#    exec::Run(host=host, command="/usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}",
+#              cwd="/usr/share/drupal7/",
+#              unless="mysql -h {{ database.server.host.ip }} -u {{ database.user }} -p{{ database.password }} -e \"select value from variable where name = 'install_task'\" {{ database.name }} 2>/dev/null | grep done >/dev/null",
+#              requires=[p_drush, p_mysql, drupal_cfg])
 end
 
 implementation drupalSiteDEB for Application:
