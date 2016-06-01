@@ -1,12 +1,11 @@
-author: Bart Vanbrabant <bart@impera.io>
+author: Inmanta <code@inmanta.com>
 license: Apache 2.0
 name: drupal
-source: git@git.impera.io:modules/drupal
-version: 0.3.9
+version: 0.3.10
 requires:
-    web: git@git.impera.io:modules/web, ">= 0.1b1"
-    apache: git@git.impera.io:modules/apache, ">= 0.1b1"
-    mysql: git@git.impera.io:modules/mysql, ">= 0.1"
-    php: git@git.impera.io:modules/php, ">= 0.1"
-    std: git@git.impera.io:modules/std, ">= 0.1"
-    exec: git@git.impera.io:modules/exec, ">= 0.2.6"
+- web
+- apache
+- mysql
+- php
+- std
+- exec
