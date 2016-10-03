@@ -54,6 +54,8 @@ implementation drupalSiteRPM for Application:
     p_which = std::Package(host=host, name="which", state="installed")
     script = std::File(host=host, path="/usr/bin/is_drupal_installed.sh", owner="root",
                        group="root", mode="755", content=std::source("drupal/is_drupal_installed.sh"))
+                       
+    exec::Run(host=host, command="setsebool -P httpd_can_network_connect 1")
     exec::Run(host=host, command="bash -c 'cd /usr/share/drupal7; /usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}'",
               cwd="/usr/share/drupal7/",
               unless="/usr/bin/is_drupal_installed.sh {{ database.server.host.ip }} {{ database.user }} {{ database.password }} {{ database.name }}",
