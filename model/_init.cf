@@ -52,13 +52,12 @@ implementation drupalSiteRPM for Application:
 
     p_drush = std::Package(host=host, name="php-drush-drush", state="installed", requires=p_which)
     p_which = std::Package(host=host, name="which", state="installed")
-    p_mysql = std::Package(host=host, name="mariadb", state="installed")
     script = std::File(host=host, path="/usr/bin/is_drupal_installed.sh", owner="root",
                        group="root", mode="755", content=std::source("drupal/is_drupal_installed.sh"))
     exec::Run(host=host, command="bash -c 'cd /usr/share/drupal7; /usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}'",
               cwd="/usr/share/drupal7/",
               unless="/usr/bin/is_drupal_installed.sh {{ database.server.host.ip }} {{ database.user }} {{ database.password }} {{ database.name }}",
-              requires=[p_drush, p_mysql, drupal_cfg, script])
+              requires=[p_drush, database, drupal_cfg, script])
 end
 
 implementation drupalSiteDEB for Application:

@@ -1,11 +1,11 @@
 author: Inmanta <code@inmanta.com>
 license: Apache 2.0
 name: drupal
-version: 0.3.10
+version: 0.3.11
 requires:
 - web
 - apache
-- mysql
+- mysql >=0.3.1
 - php
 - std
 - exec
