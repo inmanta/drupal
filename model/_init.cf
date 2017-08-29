@@ -35,7 +35,8 @@ end
 
 implementation drupalSiteRPM for Application:
     host = container.host
-    pkg = std::Package(host=host, name="drupal7", state="installed")
+    pkg = std::Package(host=host, name="drupal7", state="installed",
+                       requires=std::Package[host=host, name="epel-release"])
 
     drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal7/{{ name.hostname }}/settings.php",
         content=std::template("drupal/settings.php.tmpl"), provides=container,
@@ -62,6 +63,7 @@ implementation drupalSiteRPM for Application:
     exec::Run(host=host, command="bash -c 'cd /usr/share/drupal7; /usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name='{{ site_name }}' --sites-subdir={{ name.hostname }}'",
               cwd="/usr/share/drupal7/",
               unless="/usr/bin/is_drupal_installed.sh {{ database.server.host.ip }} {{ database.user }} {{ database.password }} {{ database.name }}",
+              environment={"DRUSH_PHP": "/usr/bin/php", "PATH": "/bin:/sbin"},
               requires=[p_drush, p_mysql, drupal_cfg, script, database, p_sm])
 
     # drush site install requires /usr/bin/sendmail to be available
