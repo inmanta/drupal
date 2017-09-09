@@ -1,5 +1,5 @@
 """
-    Copyright 2016 Inmanta
+    Copyright 2017 Inmanta
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import mysql
 import php
 import exec
 
-Application drupal_app [0:] -- [1] mysql::Database database
+Application.database [1] -- mysql::Database
 
 entity Application extends php::Application:
     """
-        A single drupal application
+        A single drupal application.
     """
     string admin_user
     string admin_password
@@ -37,6 +37,7 @@ implementation drupalSiteRPM for Application:
     host = container.host
     pkg = std::Package(host=host, name="drupal7", state="installed",
                        requires=std::Package[host=host, name="epel-release"])
+    pkg.requires = self.requires
 
     drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal7/{{ name.hostname }}/settings.php",
         content=std::template("drupal/settings.php.tmpl"), provides=container,
@@ -64,7 +65,9 @@ implementation drupalSiteRPM for Application:
               cwd="/usr/share/drupal7/",
               unless="/usr/bin/is_drupal_installed.sh {{ database.server.host.ip }} {{ database.user }} {{ database.password }} {{ database.name }}",
               environment={"DRUSH_PHP": "/usr/bin/php", "PATH": "/bin:/sbin"},
-              requires=[p_drush, p_mysql, drupal_cfg, script, database, p_sm])
+              requires=[p_drush, p_mysql, drupal_cfg, script, database, p_sm],
+              provides=self.provides)
+              
 
     # drush site install requires /usr/bin/sendmail to be available
     p_sm = std::Package(host=host, name="postfix", state="installed")
@@ -72,7 +75,7 @@ end
 
 implementation drupalSiteDEB for Application:
     host = container.host
-    pkg = std::Package(host=host, name="drupal7", state="installed")
+    pkg = std::Package(host=host, name="drupal7", state="installed", requires=self.requires)
 
     drupal_cfg = std::ConfigFile(host=host, path="/etc/drupal/7/sites/{{ name.hostname }}/settings.php",
         content=std::template("drupal/settings.php.tmpl"), provides=container,
@@ -94,10 +97,9 @@ implementation drupalSiteDEB for Application:
     exec::Run(host=host, command="bash -c 'cd /usr/share/drupal7; /usr/bin/drush site-install -y --account-mail={{ admin_email }} --account-name={{ admin_user }} --account-pass={{ admin_password }} --site-name={{ site_name }} --sites-subdir={{ name.hostname }}'",
               cwd="/usr/share/drupal7/",
               unless="/usr/bin/is_drupal_installed.sh {{ database.server.host.ip }} {{ database.user }} {{ database.password }} {{ database.name }}",
-              requires=[p_drush, p_mysql, drupal_cfg, script])
+              requires=[p_drush, p_mysql, drupal_cfg, script],
+              provides=self.provides)
 end
 
 implement Application using drupalSiteRPM, php::phpApacheRPM, apache::appImplRPM when std::familyof(container.host.os, "rhel") or std::familyof(container.host.os, "fedora")
 implement Application using drupalSiteDEB, php::phpApacheDEB, apache::appImplDEB when std::familyof(container.host.os, "ubuntu")
-
-
