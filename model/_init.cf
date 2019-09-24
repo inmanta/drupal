@@ -80,7 +80,7 @@ implementation drupalSiteRPM for Application:
     
     exec::Run(host=host,
               command="/usr/sbin/setsebool -P httpd_can_network_connect 1",
-              onlyif="/bin/test -f /sbin/setsebool")
+              onlyif="/bin/test -f /usr/sbin/setsebool")
 
     self._exec.requires = [p_drush, p_mysql, drupal_cfg, script, database, p_sm]
     self._exec.provides = self.provides
