@@ -1,7 +1,7 @@
 pytest-inmanta
-flake8==3.8.3
-flake8-black==0.2.0
-flake8-isort==3.0.0
+flake8==3.7.9
+flake8-black==0.1.1
+flake8-isort==2.8.0
 flake8-copyright==0.2.2
 black==19.10b0
 isort==4.3.21
@@ -22,6 +22,7 @@ cookiecutter==1.7.2
 cryptography==2.9.2
 dataclasses==0.7;python_version<'3.7'
 docstring-parser==0.7.1
+entrypoints==0.3
 execnet==1.7.1
 idna==2.10
 importlib-metadata==1.7.0
@@ -38,10 +39,10 @@ pluggy==0.13.1
 ply==3.11
 poyo==0.5.0
 py==1.9.0
-pycodestyle==2.6.0
+pycodestyle==2.5.0
 pycparser==2.20
 pydantic==1.5.1
-pyflakes==2.2.0
+pyflakes==2.1.1
 pyformance==0.4
 PyJWT==1.7.1
 pyparsing==2.4.7
