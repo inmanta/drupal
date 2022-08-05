@@ -1,6 +1,6 @@
 author: Inmanta <code@inmanta.com>
 license: Apache 2.0
 name: drupal
-version: 0.7.7
+version: 0.7.8
 requires:
 - mysql >=0.3.1
